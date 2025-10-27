@@ -3,10 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "npm run check-db && next dev",
+    "build": "npm run check-db && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "check-db": "tsx scripts/check-db-health.ts"
   },
   "dependencies": {
     "@clickhouse/client-web": "^1.12.1",
@@ -19,9 +20,11 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^17.2.3",
     "eslint": "^9",
     "eslint-config-next": "16.0.0",
     "tailwindcss": "^4",
+    "tsx": "^4.20.6",
     "typescript": "^5"
   }
 }
