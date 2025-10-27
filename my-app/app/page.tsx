@@ -32,7 +32,7 @@ export default async function Home() {
           <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
             <span>No data found in the table.</span>
           </div>
-        ) : (
+        ) : data.length > 0 && data[0] ? (
           <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-lg overflow-hidden">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
@@ -67,6 +67,10 @@ export default async function Home() {
             <div className="bg-zinc-100 dark:bg-zinc-800 px-6 py-3 text-sm text-zinc-600 dark:text-zinc-400">
               Total rows: {data.length}
             </div>
+          </div>
+        ) : (
+          <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
+            <span>No data available to display.</span>
           </div>
         )}
       </main>
