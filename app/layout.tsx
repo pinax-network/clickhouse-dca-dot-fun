@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "ClickHouse Data Viewer",
-  description: "NextJS application displaying ClickHouse data using SSR",
+  title: "DCA Active Tokens",
+  description: "View active tokens from the DCA smart contract with performance metrics",
 };
 
 export default function RootLayout({
