@@ -43,7 +43,7 @@ import { runHealthChecks } from '../lib/db-health.js';
 async function main() {
   try {
     const result = await runHealthChecks();
-    
+
     if (!result.overall) {
       if (process.env.DB_CHECK_WARN_ONLY === '1') {
         console.warn('\n⚠️  Database health checks failed, but continuing (DB_CHECK_WARN_ONLY=1)');
@@ -56,16 +56,16 @@ async function main() {
         process.exit(1);
       }
     }
-    
+
     process.exit(0);
   } catch (error) {
     console.error('\nUnexpected error during health check:', error);
-    
+
     if (process.env.DB_CHECK_WARN_ONLY === '1') {
       console.warn('\n⚠️  Continuing despite errors (DB_CHECK_WARN_ONLY=1)\n');
       process.exit(0);
     }
-    
+
     process.exit(1);
   }
 }
