@@ -60,10 +60,17 @@ This will:
 - Ping the ClickHouse server using the `/ping` endpoint
 - Display detailed connection diagnostics if issues are detected
 
+**Environment Variables for Health Checks:**
+
+- `SKIP_DB_CHECK=1` - Skip the database health check entirely
+- `DB_CHECK_WARN_ONLY=1` - Show health check warnings but don't fail the build
+
 Development mode (includes automatic health check):
 
 ```bash
 pnpm dev
+# Or skip the health check:
+SKIP_DB_CHECK=1 pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
@@ -73,6 +80,9 @@ Production build (includes automatic health check):
 ```bash
 pnpm build
 pnpm start
+
+# For CI/CD environments where the database might not be accessible during build:
+SKIP_DB_CHECK=1 pnpm build
 ```
 
 ### Database Requirements
