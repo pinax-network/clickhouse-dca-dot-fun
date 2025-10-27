@@ -10,6 +10,10 @@ This is a Next.js application that displays active tokens from the DCA smart con
 - **Modern TypeScript**: Built with TypeScript for type safety
 - **Responsive Design**: Uses Tailwind CSS for a modern, responsive UI
 - **Error Handling**: Gracefully handles connection errors and displays helpful messages
+- **Database Health Checks**: Automatic connectivity verification on startup and build
+  - DNS resolution checks to verify hostname resolution
+  - ClickHouse `/ping` endpoint validation
+  - Detailed error logging with connection diagnostics
 
 ## Getting Started
 
@@ -43,7 +47,20 @@ See `.env.example` for reference.
 
 ### Running the Application
 
-Development mode:
+**Database Health Check:**
+
+Before running the application, you can verify your ClickHouse connection:
+
+```bash
+pnpm check-db
+```
+
+This will:
+- Resolve the DNS for your ClickHouse hostname and display IP addresses
+- Ping the ClickHouse server using the `/ping` endpoint
+- Display detailed connection diagnostics if issues are detected
+
+Development mode (includes automatic health check):
 
 ```bash
 pnpm dev
@@ -51,7 +68,7 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-Production build:
+Production build (includes automatic health check):
 
 ```bash
 pnpm build
