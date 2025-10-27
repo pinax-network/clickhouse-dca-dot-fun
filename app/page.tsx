@@ -1,18 +1,30 @@
-import { getActiveTokens, type TokenData, type QueryMetrics } from '@/lib/clickhouse';
+'use client';
+import { getActiveTokens, type TokenData, type QueryMetrics, TokenDataWithMetrics } from '@/lib/clickhouse';
+import useSWR from 'swr'
 
-export default async function Home() {
-  let data: TokenData[] = [];
-  let metrics: QueryMetrics | null = null;
-  let error: string | null = null;
+function fetcher(url: string): Promise<TokenDataWithMetrics> {
+  return fetch(url).then((res) => res.json())
+}
 
-  try {
-    const result = await getActiveTokens();
-    data = result.data;
-    metrics = result.metrics;
-  } catch (err) {
-    error = err instanceof Error ? err.message : 'Failed to fetch data';
-    console.error('Error fetching ClickHouse data:', err);
-  }
+export default function Home() {
+  // let data: TokenData[] = [];
+  // let metrics: QueryMetrics | null = null;
+  // let error: string | null = null;
+  const { data, error, isLoading } = useSWR('/api/tokens', fetcher);
+  if (error) return <div>failed to load</div>
+  if (isLoading) return <div>loading...</div>
+  if (!data) return <div>No data</div>
+  const metrics = data.metrics;
+  const tokens = data.data;
+
+  // try {
+  //   const result = await getActiveTokens();
+  //   data = result.data;
+  //   metrics = result.metrics;
+  // } catch (err) {
+  //   error = err instanceof Error ? err.message : 'Failed to fetch data';
+  //   console.error('Error fetching ClickHouse data:', err);
+  // }
 
   return (
     <div className="min-h-screen bg-zinc-50 p-8 font-sans dark:bg-black">
@@ -60,7 +72,7 @@ export default async function Home() {
             <strong className="font-bold">Error: </strong>
             <span className="block sm:inline">{error}</span>
           </div>
-        ) : data.length === 0 ? (
+        ) : tokens.length === 0 ? (
           <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
             <span>No active tokens found.</span>
           </div>
@@ -94,7 +106,7 @@ export default async function Home() {
                   </tr>
                 </thead>
                 <tbody className="bg-white dark:bg-zinc-900 divide-y divide-zinc-200 dark:divide-zinc-800">
-                  {data.map((row, idx) => (
+                  {tokens.map((row, idx) => (
                     <tr key={idx} className="hover:bg-zinc-50 dark:hover:bg-zinc-800">
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-zinc-900 dark:text-zinc-100">
                         {row.token}
@@ -112,20 +124,18 @@ export default async function Home() {
                         {row.feed}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-zinc-100">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          row.is_stakable 
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
-                            : 'bg-zinc-100 text-zinc-800 dark:bg-zinc-700 dark:text-zinc-300'
-                        }`}>
+                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${row.is_stakable
+                          ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                          : 'bg-zinc-100 text-zinc-800 dark:bg-zinc-700 dark:text-zinc-300'
+                          }`}>
                           {row.is_stakable ? 'Yes' : 'No'}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-zinc-900 dark:text-zinc-100">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          row.is_active 
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
-                            : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                        }`}>
+                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${row.is_active
+                          ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                          : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                          }`}>
                           {row.is_active ? 'Active' : 'Inactive'}
                         </span>
                       </td>
@@ -135,7 +145,7 @@ export default async function Home() {
               </table>
             </div>
             <div className="bg-zinc-100 dark:bg-zinc-800 px-6 py-3 text-sm text-zinc-600 dark:text-zinc-400">
-              Total active tokens: {data.length}
+              Total active tokens: {tokens.length}
             </div>
           </div>
         )}
