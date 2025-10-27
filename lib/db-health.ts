@@ -37,18 +37,18 @@ function getHostnameFromUrl(url: string): string {
  */
 export async function checkDNS(url: string): Promise<HealthCheckResult> {
   const hostname = getHostnameFromUrl(url);
-  
+
   try {
     // Use DNS-over-HTTPS to resolve the hostname
     const dnsUrl = `https://dns.google/resolve?name=${hostname}&type=A`;
     const response = await fetch(dnsUrl);
     const data = await response.json() as DNSResponse;
-    
+
     if (data.Answer && data.Answer.length > 0) {
       const ipAddresses = data.Answer
         .filter((answer) => answer.type === 1) // A records
         .map((answer) => answer.data);
-      
+
       return {
         success: true,
         message: `DNS resolution successful for ${hostname}`,
@@ -83,12 +83,9 @@ export async function checkDNS(url: string): Promise<HealthCheckResult> {
  * Ping the ClickHouse server using the /ping endpoint
  */
 export async function pingClickHouse(
-  url: string,
-  username: string,
-  password: string
+  url: string
 ): Promise<HealthCheckResult> {
   const hostname = getHostnameFromUrl(url);
-  
   try {
     // Use the ping endpoint
     const pingUrl = new URL(url);
@@ -100,16 +97,13 @@ export async function pingClickHouse(
     try {
       const response = await fetch(pingUrl.toString(), {
         method: 'GET',
-        headers: {
-          'Authorization': `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`,
-        },
         signal: controller.signal,
       });
 
       clearTimeout(timeoutId);
 
       const responseText = await response.text();
-      
+
       if (response.ok) {
         return {
           success: true,
@@ -133,15 +127,15 @@ export async function pingClickHouse(
       }
     } catch (fetchError: unknown) {
       clearTimeout(timeoutId);
-      
-      const err = fetchError as Error & { 
-        name?: string; 
-        cause?: { 
-          code?: string; 
+
+      const err = fetchError as Error & {
+        name?: string;
+        cause?: {
+          code?: string;
           message?: string;
         };
       };
-      
+
       // Extract detailed error information
       const errorDetails: HealthCheckResult['details'] = {
         url,
@@ -195,12 +189,9 @@ export async function runHealthChecks(): Promise<{
   };
 }> {
   const url = process.env.CLICKHOUSE_URL || 'http://localhost:8123';
-  const username = process.env.CLICKHOUSE_USERNAME || 'default';
-  const password = process.env.CLICKHOUSE_PASSWORD || '';
 
   console.log('\n=== ClickHouse Database Health Check ===\n');
   console.log(`Target URL: ${url}`);
-  console.log(`Username: ${username}`);
   console.log('');
 
   // Check DNS resolution
@@ -221,7 +212,7 @@ export async function runHealthChecks(): Promise<{
 
   // Check ClickHouse ping
   console.log('2. Pinging ClickHouse server...');
-  const pingCheck = await pingClickHouse(url, username, password);
+  const pingCheck = await pingClickHouse(url);
   if (pingCheck.success) {
     console.log(`✓ ${pingCheck.message}`);
     if (pingCheck.details?.pingResponse) {
@@ -245,7 +236,7 @@ export async function runHealthChecks(): Promise<{
   console.log('');
 
   const overall = dnsCheck.success && pingCheck.success;
-  
+
   if (overall) {
     console.log('✓ All health checks passed!\n');
   } else {
