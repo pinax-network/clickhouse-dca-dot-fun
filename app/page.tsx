@@ -1,18 +1,22 @@
-import { getActiveTokens, type TokenData, type QueryMetrics } from '@/lib/clickhouse';
+"use client";
+import { type TokenData, type QueryMetrics } from '@/lib/clickhouse';
+import useSWR from 'swr'
 
-export default async function Home() {
-  let data: TokenData[] = [];
-  let metrics: QueryMetrics | null = null;
-  let error: string | null = null;
+function fetcher(url: string): Promise<{ data: TokenData[]; metrics: QueryMetrics }> {
+  return fetch(url).then(res => {
+    if (!res.ok) {
+      throw new Error(`Error fetching data: ${res.statusText}`);
+    }
+    return res.json();
+  });
+}
 
-  try {
-    const result = await getActiveTokens();
-    data = result.data;
-    metrics = result.metrics;
-  } catch (err) {
-    error = err instanceof Error ? err.message : 'Failed to fetch data';
-    console.error('Error fetching ClickHouse data:', err);
-  }
+export default function Home() {
+  const { data, error, isLoading } = useSWR('/api/tokens', fetcher)
+
+  if (error) return <div>failed to load</div>
+  if (isLoading) return <div>loading...</div>
+  if (!data) return <div>No data</div>
 
   return (
     <div className="min-h-screen bg-zinc-50 p-8 font-sans dark:bg-black">
@@ -26,14 +30,14 @@ export default async function Home() {
           </p>
         </div>
 
-        {metrics && (
+        {data.metrics && (
           <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-white dark:bg-zinc-900 rounded-lg shadow p-4">
               <div className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-1">
                 HTTP Request Time
               </div>
               <div className="text-2xl font-bold text-black dark:text-zinc-50">
-                {metrics.httpRequestTimeMs}ms
+                {data.metrics.httpRequestTimeMs}ms
               </div>
             </div>
             <div className="bg-white dark:bg-zinc-900 rounded-lg shadow p-4">
@@ -41,7 +45,7 @@ export default async function Home() {
                 Data Fetch Time
               </div>
               <div className="text-2xl font-bold text-black dark:text-zinc-50">
-                {metrics.dataFetchTimeMs}ms
+                {data.metrics.dataFetchTimeMs}ms
               </div>
             </div>
             <div className="bg-white dark:bg-zinc-900 rounded-lg shadow p-4">
@@ -49,7 +53,7 @@ export default async function Home() {
                 Total Time
               </div>
               <div className="text-2xl font-bold text-black dark:text-zinc-50">
-                {metrics.totalTimeMs}ms
+                {data.metrics.totalTimeMs}ms
               </div>
             </div>
           </div>
@@ -60,7 +64,7 @@ export default async function Home() {
             <strong className="font-bold">Error: </strong>
             <span className="block sm:inline">{error}</span>
           </div>
-        ) : data.length === 0 ? (
+        ) : data.data.length === 0 ? (
           <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
             <span>No active tokens found.</span>
           </div>
@@ -94,7 +98,7 @@ export default async function Home() {
                   </tr>
                 </thead>
                 <tbody className="bg-white dark:bg-zinc-900 divide-y divide-zinc-200 dark:divide-zinc-800">
-                  {data.map((row, idx) => (
+                  {data.data.map((row, idx) => (
                     <tr key={idx} className="hover:bg-zinc-50 dark:hover:bg-zinc-800">
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-zinc-900 dark:text-zinc-100">
                         {row.token}
@@ -133,7 +137,7 @@ export default async function Home() {
               </table>
             </div>
             <div className="bg-zinc-100 dark:bg-zinc-800 px-6 py-3 text-sm text-zinc-600 dark:text-zinc-400">
-              Total active tokens: {data.length}
+              Total active tokens: {data.data.length}
             </div>
           </div>
         )}
