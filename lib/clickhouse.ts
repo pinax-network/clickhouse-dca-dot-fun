@@ -1,7 +1,7 @@
 import { createClient } from '@clickhouse/client-web';
-import { Agent, setGlobalDispatcher } from 'undici';
+// import { Agent, setGlobalDispatcher } from 'undici';
 
-setGlobalDispatcher(new Agent({ connect: { family: 4 } }));
+// setGlobalDispatcher(new Agent({ connect: { family: 4 } }));
 
 
 export const clickhouseClient = createClient({

@@ -6,25 +6,23 @@ function fetcher(url: string): Promise<TokenDataWithMetrics> {
   return fetch(url).then((res) => res.json())
 }
 
-export default function Home() {
-  // let data: TokenData[] = [];
-  // let metrics: QueryMetrics | null = null;
-  // let error: string | null = null;
-  const { data, error, isLoading } = useSWR('/api/tokens', fetcher);
-  if (error) return <div>failed to load</div>
-  if (isLoading) return <div>loading...</div>
-  if (!data) return <div>No data</div>
-  const metrics = data.metrics;
-  const tokens = data.data;
+export default async function Home() {
+  let data: TokenData[] = [];
+  let metrics: QueryMetrics | null = null;
+  let error: string | null = null;
+  // const data = await getActiveTokens();
+  // if (!data) return <div>No data</div>
+  // const metrics = data.metrics;
+  // const tokens = data.data;
 
-  // try {
-  //   const result = await getActiveTokens();
-  //   data = result.data;
-  //   metrics = result.metrics;
-  // } catch (err) {
-  //   error = err instanceof Error ? err.message : 'Failed to fetch data';
-  //   console.error('Error fetching ClickHouse data:', err);
-  // }
+  try {
+    const result = await getActiveTokens();
+    data = result.data;
+    metrics = result.metrics;
+  } catch (err) {
+    error = err instanceof Error ? err.message : 'Failed to fetch data';
+    console.error('Error fetching ClickHouse data:', err);
+  }
 
   return (
     <div className="min-h-screen bg-zinc-50 p-8 font-sans dark:bg-black">
@@ -72,7 +70,7 @@ export default function Home() {
             <strong className="font-bold">Error: </strong>
             <span className="block sm:inline">{error}</span>
           </div>
-        ) : tokens.length === 0 ? (
+        ) : data.length === 0 ? (
           <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
             <span>No active tokens found.</span>
           </div>
@@ -106,7 +104,7 @@ export default function Home() {
                   </tr>
                 </thead>
                 <tbody className="bg-white dark:bg-zinc-900 divide-y divide-zinc-200 dark:divide-zinc-800">
-                  {tokens.map((row, idx) => (
+                  {data.map((row, idx) => (
                     <tr key={idx} className="hover:bg-zinc-50 dark:hover:bg-zinc-800">
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-zinc-900 dark:text-zinc-100">
                         {row.token}
@@ -145,7 +143,7 @@ export default function Home() {
               </table>
             </div>
             <div className="bg-zinc-100 dark:bg-zinc-800 px-6 py-3 text-sm text-zinc-600 dark:text-zinc-400">
-              Total active tokens: {tokens.length}
+              Total active tokens: {data.length}
             </div>
           </div>
         )}

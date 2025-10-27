@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "npm run check-db && next dev",
+    "build": "npm run check-db && next build",
     "start": "next start",
     "lint": "eslint",
     "check-db": "tsx scripts/check-db-health.ts"
