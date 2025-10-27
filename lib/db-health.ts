@@ -1,7 +1,3 @@
-import { Agent, setGlobalDispatcher } from 'undici';
-
-setGlobalDispatcher(new Agent({ connect: { family: 4 } }));
-
 interface HealthCheckResult {
   success: boolean;
   message: string;
