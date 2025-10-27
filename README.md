@@ -1,10 +1,12 @@
-# ClickHouse Data Viewer
+# DCA Active Tokens Viewer
 
-This is a Next.js application that displays data from ClickHouse using Server-Side Rendering (SSR).
+This is a Next.js application that displays active tokens from the DCA smart contract using ClickHouse data with Server-Side Rendering (SSR).
 
 ## Features
 
 - **Server-Side Rendering**: Data is fetched from ClickHouse on the server before the page is rendered
+- **Performance Metrics**: Displays SQL compute time and HTTP request time for each query
+- **Active Token Filtering**: Shows only active tokens from the DCA contract
 - **Modern TypeScript**: Built with TypeScript for type safety
 - **Responsive Design**: Uses Tailwind CSS for a modern, responsive UI
 - **Error Handling**: Gracefully handles connection errors and displays helpful messages
@@ -34,6 +36,7 @@ CLICKHOUSE_URL=https://your-clickhouse-instance.com
 CLICKHOUSE_USERNAME=default
 CLICKHOUSE_PASSWORD=your-password
 CLICKHOUSE_DATABASE=default
+CONTRACT_ADDRESS=0xdca00000067413240aeab357a3a89ea352d013e8
 ```
 
 See `.env.example` for reference.
@@ -57,7 +60,12 @@ pnpm start
 
 ### Database Requirements
 
-The application expects a ClickHouse table named `set_token_props`. Make sure this table exists and is accessible with the provided credentials.
+The application expects the following ClickHouse tables:
+- `set_token_props` - Token properties including symbol, name, decimals, feed, and stakability
+- `set_token_state` - Token state including active status
+- `blocks` - Block information for joining queries
+
+The query filters tokens by the configured `CONTRACT_ADDRESS` and shows only active tokens.
 
 ## Project Structure
 
