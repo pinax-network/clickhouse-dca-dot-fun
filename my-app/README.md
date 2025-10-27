@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ClickHouse Data Viewer
+
+This is a Next.js application that displays data from ClickHouse using Server-Side Rendering (SSR).
+
+## Features
+
+- **Server-Side Rendering**: Data is fetched from ClickHouse on the server before the page is rendered
+- **Modern TypeScript**: Built with TypeScript for type safety
+- **Responsive Design**: Uses Tailwind CSS for a modern, responsive UI
+- **Error Handling**: Gracefully handles connection errors and displays helpful messages
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+ installed
+- pnpm package manager
+- Access to a ClickHouse database instance
+
+### Installation
+
+1. Install dependencies:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
+```
+
+2. Configure environment variables:
+
+Create a `.env.local` file in the root directory with your ClickHouse connection details:
+
+```bash
+CLICKHOUSE_URL=https://your-clickhouse-instance.com
+CLICKHOUSE_USERNAME=default
+CLICKHOUSE_PASSWORD=your-password
+CLICKHOUSE_DATABASE=default
+```
+
+See `.env.example` for reference.
+
+### Running the Application
+
+Development mode:
+
+```bash
 pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Production build:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+pnpm build
+pnpm start
+```
+
+### Database Requirements
+
+The application expects a ClickHouse table named `set_token_props`. Make sure this table exists and is accessible with the provided credentials.
+
+## Project Structure
+
+- `app/page.tsx` - Main page component with SSR data fetching
+- `lib/clickhouse.ts` - ClickHouse client configuration and data fetching functions
+- `app/layout.tsx` - Root layout component
+- `.env.example` - Example environment variables
+
+## Technologies Used
+
+- [Next.js 16](https://nextjs.org/) - React framework with SSR support
+- [React 19](https://react.dev/) - UI library
+- [@clickhouse/client-web](https://clickhouse.com/docs/en/integrations/javascript) - ClickHouse JavaScript client
+- [TypeScript](https://www.typescriptlang.org/) - Type safety
+- [Tailwind CSS](https://tailwindcss.com/) - Styling
 
 ## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+To learn more about Next.js and ClickHouse:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- [Next.js Documentation](https://nextjs.org/docs)
+- [ClickHouse JavaScript Client Documentation](https://clickhouse.com/docs/en/integrations/javascript)
+- [Learn Next.js](https://nextjs.org/learn)
 
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Check out the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
