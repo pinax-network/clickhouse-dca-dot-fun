@@ -1,6 +1,9 @@
 "use client";
 import { type TokenData, type QueryMetrics } from '@/lib/clickhouse';
-import useSWR from 'swr'
+import useSWR from 'swr';
+import { LoadingSkeleton } from '@/components/loading-skeleton';
+import { ErrorState } from '@/components/error-state';
+import { EmptyState } from '@/components/empty-state';
 
 function fetcher(url: string): Promise<{ data: TokenData[]; metrics: QueryMetrics }> {
   return fetch(url).then(res => {
@@ -14,9 +17,9 @@ function fetcher(url: string): Promise<{ data: TokenData[]; metrics: QueryMetric
 export default function Home() {
   const { data, error, isLoading } = useSWR('/api/tokens', fetcher)
 
-  if (error) return <div>failed to load</div>
-  if (isLoading) return <div>loading...</div>
-  if (!data) return <div>No data</div>
+  if (error) return <ErrorState error={error} />
+  if (isLoading) return <LoadingSkeleton />
+  if (!data || data.data.length === 0) return <EmptyState />
 
   return (
     <div className="min-h-screen bg-zinc-50 p-8 font-sans dark:bg-black">
