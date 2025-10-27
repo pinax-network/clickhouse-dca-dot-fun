@@ -38,7 +38,7 @@ export default async function Home() {
               <table className="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
                 <thead className="bg-zinc-100 dark:bg-zinc-800">
                   <tr>
-                    {Object.keys(data[0]).map((key) => (
+                    {data[0] && Object.keys(data[0]).map((key) => (
                       <th
                         key={key}
                         className="px-6 py-3 text-left text-xs font-medium text-zinc-700 dark:text-zinc-300 uppercase tracking-wider"
