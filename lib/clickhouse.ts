@@ -18,8 +18,8 @@ export interface TokenData {
 }
 
 export interface QueryMetrics {
-  sqlComputeTimeMs: number;
   httpRequestTimeMs: number;
+  dataFetchTimeMs: number;
   totalTimeMs: number;
 }
 
@@ -59,9 +59,11 @@ export async function getActiveTokens(): Promise<TokenDataWithMetrics> {
     ORDER BY ltp.token_symbol ASC
   `;
 
-  // Track HTTP request time (total time for the entire operation)
-  const httpStartTime = performance.now();
+  // Track total operation time
+  const startTime = performance.now();
   
+  // Track query execution time
+  const queryStartTime = performance.now();
   const resultSet = await clickhouseClient.query({
     query,
     query_params: {
@@ -69,24 +71,26 @@ export async function getActiveTokens(): Promise<TokenDataWithMetrics> {
     },
     format: 'JSONEachRow',
   });
+  const queryEndTime = performance.now();
 
+  // Track data parsing time
+  const parseStartTime = performance.now();
   const data = await resultSet.json();
-  const httpEndTime = performance.now();
+  const parseEndTime = performance.now();
+  
+  const endTime = performance.now();
   
   // Calculate times
-  const httpRequestTimeMs = Math.round((httpEndTime - httpStartTime) * 100) / 100;
-  
-  // Note: ClickHouse web client doesn't directly expose server-side execution time
-  // For now, we'll use the HTTP request time as an approximation
-  // In a production environment, you might want to query system.query_log for precise server-side metrics
-  const sqlComputeTimeMs = Math.round(httpRequestTimeMs * 0.7 * 100) / 100; // Approximate 70% of total time
+  const httpRequestTimeMs = Math.round((queryEndTime - queryStartTime) * 100) / 100;
+  const dataFetchTimeMs = Math.round((parseEndTime - parseStartTime) * 100) / 100;
+  const totalTimeMs = Math.round((endTime - startTime) * 100) / 100;
   
   return {
     data: data as TokenData[],
     metrics: {
-      sqlComputeTimeMs,
       httpRequestTimeMs,
-      totalTimeMs: httpRequestTimeMs,
+      dataFetchTimeMs,
+      totalTimeMs,
     },
   };
 }

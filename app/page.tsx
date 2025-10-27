@@ -30,18 +30,18 @@ export default async function Home() {
           <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-white dark:bg-zinc-900 rounded-lg shadow p-4">
               <div className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-1">
-                SQL Compute Time
-              </div>
-              <div className="text-2xl font-bold text-black dark:text-zinc-50">
-                {metrics.sqlComputeTimeMs}ms
-              </div>
-            </div>
-            <div className="bg-white dark:bg-zinc-900 rounded-lg shadow p-4">
-              <div className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-1">
                 HTTP Request Time
               </div>
               <div className="text-2xl font-bold text-black dark:text-zinc-50">
                 {metrics.httpRequestTimeMs}ms
+              </div>
+            </div>
+            <div className="bg-white dark:bg-zinc-900 rounded-lg shadow p-4">
+              <div className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-1">
+                Data Fetch Time
+              </div>
+              <div className="text-2xl font-bold text-black dark:text-zinc-50">
+                {metrics.dataFetchTimeMs}ms
               </div>
             </div>
             <div className="bg-white dark:bg-zinc-900 rounded-lg shadow p-4">
