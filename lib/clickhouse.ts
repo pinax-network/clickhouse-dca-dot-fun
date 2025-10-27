@@ -1,4 +1,4 @@
-import { createClient } from '@clickhouse/client-web';
+import { createClient } from '@clickhouse/client';
 
 export const clickhouseClient = createClient({
   url: process.env.CLICKHOUSE_URL || 'http://localhost:8123',
