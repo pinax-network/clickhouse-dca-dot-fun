@@ -1,8 +1,6 @@
 import { Skeleton } from "./ui/skeleton";
 
-export function TableSkeleton() {
-  const columns = 7;
-  const rows = 5;
+export function TableSkeleton({ columns = 7, rows = 5 }: { columns?: number; rows?: number } = {}) {
 
   return (
     <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-lg overflow-hidden">
