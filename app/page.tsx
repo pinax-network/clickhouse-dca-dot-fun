@@ -1,19 +1,9 @@
-'use client';
-import { getActiveTokens, type TokenData, type QueryMetrics, TokenDataWithMetrics } from '@/lib/clickhouse';
-import useSWR from 'swr'
-
-function fetcher(url: string): Promise<TokenDataWithMetrics> {
-  return fetch(url).then((res) => res.json())
-}
+import { getActiveTokens, type TokenData, type QueryMetrics } from '@/lib/clickhouse';
 
 export default async function Home() {
   let data: TokenData[] = [];
   let metrics: QueryMetrics | null = null;
   let error: string | null = null;
-  // const data = await getActiveTokens();
-  // if (!data) return <div>No data</div>
-  // const metrics = data.metrics;
-  // const tokens = data.data;
 
   try {
     const result = await getActiveTokens();

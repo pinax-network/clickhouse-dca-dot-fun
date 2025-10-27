@@ -1,8 +1,4 @@
 import { createClient } from '@clickhouse/client-web';
-// import { Agent, setGlobalDispatcher } from 'undici';
-
-// setGlobalDispatcher(new Agent({ connect: { family: 4 } }));
-
 
 export const clickhouseClient = createClient({
   url: process.env.CLICKHOUSE_URL || 'http://localhost:8123',
